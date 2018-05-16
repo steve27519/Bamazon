@@ -7,7 +7,7 @@ var connection = mysql.createConnection({
     host: "localhost",
     port: 3306,
     user: "root",
-    password: "",
+    password: "Dirtyone1",
     database: "bamazon_db"
 });
 
@@ -27,14 +27,15 @@ connection.connect(function (err) {
         });
         // purchase item
     }).then(function (result) {
+        
         result.forEach(function (item) {
             numberOfProductTypes++;
-            console.log('Item ID: ' + item.item_id + ' || Product Name: ' + item.product_name + ' || Price: ' + item.price);
+            console.log("Item ID: " + item.id + " || product_name: " + item.product_name + " || price: " + item.price);
         });
         
     }).then(function () {
-        return shopping();
-        // catch errors
+        
+        menu();
     }).catch(function (err) {
         console.log(err);
     });
@@ -45,12 +46,13 @@ function menu() {
         name: "item",
         message: "Enter the item number of the product you would like to purchase.",
         type: "input",
-        
+       
         validate: function (value) {
-            if ((isNaN(value) === false) && (value <= numberOfProductTypes)) {
+            console.log(numberOfProductTypes);
+            if ((isNaN(value) === false)) {
                 return true;
             } else {
-                console.log('\nPlease enter a valid ID.');
+                console.log("\nPlease enter a valid ID.");
                 return false;
             }
         }
@@ -69,9 +71,10 @@ function menu() {
         }
         
     }]).then(function (answer) {
+        console.log(answer);
         return new Promise(function (resolve, reject) {
             connection.query("SELECT * FROM products WHERE ?", {
-                item_id: answer.item
+                id: answer.item
             }, function (err, res) {
                 if (err) reject(err);
                 resolve(res);
@@ -97,15 +100,14 @@ function menu() {
                 connection.query("UPDATE products SET ? WHERE ?", [{
                     stock_quantity: updatedQuantity
                 }, {
-                    item_id: itemId
+                    id: itemId
                 }], function (err, res) {
                     if (err) throw err;
                     console.log("Your total cost $" + totalCost + ". Thank you for shopping with Bamazon!");
                     connection.destroy();
                 });
-            } else {
-                enterStore();
-            }
+            } 
+
             
         }).catch(function (err) {
             console.log(err);

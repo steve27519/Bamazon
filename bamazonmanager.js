@@ -7,7 +7,7 @@ var connection = mysql.createConnection({
     host: "localhost",
     port: 3306,
     user: "root",
-    password: "",
+    password: "Dirtyone1",
     database: "bamazon_db"
 });
 
@@ -66,12 +66,12 @@ function ManagerApp() {
                 break
         };
     });
-}
+
 
 function logItems(result) {
     result.forEach(function(item) {
         numberOfProductTypes++;
-        console.log("Item ID: " + item.item_id + "|| Product Name: " + item.product_name + "|| Department: " + item.department_name + "|| Price: " + item.price + " || Stock: " + item.stock_quantity);
+        console.log("Item ID: " + item.id + "|| Product Name: " + item.product_name + "|| Department: " + item.department_name + "|| Price: " + item.price + " || Stock: " + item.stock_quantity);
     });
 }
 
@@ -136,17 +136,17 @@ function addInventory() {
         }
     }]).then(function(answer) {
         return new Promise(function(resolve, reject) {
-            connection.query("SELECT stock_quantity FROM products WHERE ?", { item_id: answer.item }, function(err, res) {
+            connection.query("SELECT stock_quantity FROM products WHERE ?", { id: answer.item }, function(err, res) {
                 if (err) reject(err);
                 resolve(res);
             });
         }).then(function(result) {
             var updatedQuantity = parseInt(result[0].stock_quantity) + parseInt(answer.quantity);
-            var itemId = answer.item
+            var id = answer.item
             connection.query("UPDATE products SET ? WHERE ?", [{
                 stock_quantity: updatedQuantity
             }, {
-                item_id: itemId
+                id: itemId
             }], function(err, res) {
                 if (err) throw err;
                 console.log("There is now : " + updatedQuantity + '.');
